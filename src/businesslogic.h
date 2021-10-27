@@ -11,6 +11,7 @@
 #include <tools/printer.h>
 #include <general/types.h>
 #include <tools/systools.h>
+#include <tools/tap.h>
 
 extern int m_counter;
 

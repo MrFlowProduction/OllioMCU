@@ -25,6 +25,9 @@ void handlingExpInterrupt(); */
 /* Állapotok regisztrálása */
 void InitExpanderStates();
 
+/* DC Motor beállítása */
+void setDcMotor(MotorState);
+
 /* DC motor vezérlés */
 void setDcMotorPins(bool, bool, bool);
 
@@ -39,10 +42,6 @@ int getSensValue(int);
 
 /* Szonda anód tápfeszültség kapcsolása */
 void setProbeSupply(bool);
-
-/* Csap beállítása */
-void SetTap(TapState);
-
 
 
 bool doorOpened();

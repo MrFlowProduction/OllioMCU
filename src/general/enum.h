@@ -9,9 +9,18 @@
 #define DISABLE 0
 
 
+/* DC Motor állapotai */
+enum MotorState {
+    STOP,
+    BRAKE,
+    FORWARD,
+    BACKWARD
+};
+
+
 /* Tap State */
 enum TapState {
-    TANK,
+    WATERTANK,
     CLOSE,
     BARREL
 };

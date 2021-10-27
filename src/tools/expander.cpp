@@ -113,16 +113,7 @@ void IRAM_ATTR handlingExpInterrupt(){
 }
 */
 
-/* Set DC Motor driver pins */
-void setDcMotorPins(bool in1, bool in2, bool enable){
 
-    if(!isMcpConnected){ return; }
-
-    mcp.digitalWrite(DC_IN1, in1);
-    mcp.digitalWrite(DC_IN2, in1);
-    mcp.digitalWrite(DC_EN, enable);
-
-}
 
 
 /* Felhasználói gomb megvilágítása */
@@ -177,30 +168,51 @@ bool serviceButton(){
 }
 
 
+/* Set DC Motor driver pins */
+void setDcMotorPins(bool in1, bool in2, bool enable){
 
-/* Csap beállítása */
-void SetTap(TapState state){
+    if(!isMcpConnected){ return; }
 
-    if(tapState == state) { return; }
+    mcp.digitalWrite(DC_IN1, in1);
+    mcp.digitalWrite(DC_IN2, in1);
+    mcp.digitalWrite(DC_EN, enable);
 
+}
+
+
+/* DC Motor beállítása */
+void setDcMotor(MotorState state){
+    
     switch (state)
     {
-        case CLOSE:
-            
+        // Kikapcsolt állapot
+        case MotorState::STOP:
+            setDcMotorPins(false, false, false);
             break;
 
-        case TANK:
-            
+        // Befékezett állapot
+        case MotorState::BRAKE:
+            setDcMotorPins(true, true, true);
             break;
 
-        case BARREL:
-            
+        // Előre tekerés
+        case MotorState::FORWARD:
+            setDcMotorPins(true, false, true);
+            break;
+
+        // Hátra tekerés
+        case MotorState::BACKWARD:
+            setDcMotorPins(false, true, true);
             break;
         
+        
         default:
+            setDcMotorPins(false, false, false);
             break;
     }
 
-    tapState = state;
 }
+
+
+
 
