@@ -5,7 +5,7 @@
 #include <tools/lcd.h>
 
 /* Rendszerhiba dobása, üzemképtelen állapot */
-void dropFaulty(String, int);
+void dropFaulty(String, int, bool = true);
 
 /* Rendszerellenőrzés */
 void syscheck();

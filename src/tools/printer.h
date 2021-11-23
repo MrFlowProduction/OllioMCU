@@ -8,6 +8,7 @@
 #include <Adafruit_Thermal.h>
 #include <tools/mem.h>
 #include <tools/systools.h>
+#include <tools/rtc.h>
 
 /* Inicializálás */
 void INIT_PRINTER();

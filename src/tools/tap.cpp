@@ -1,37 +1,7 @@
 #include <tools/tap.h>
 
 
-/* Csap beállítása */
-bool SetTap(TapState state){
 
-    if(tapState == state) { return; }
-
-    bool isSucceded;
-
-    switch (state)
-    {
-        case TapState::CLOSE:
-            isSucceded = moveTap(TAP_CLOSED);
-            break;
-
-        case TapState::WATERTANK:
-            isSucceded = moveTap(TAP_WATERTANK);
-            break;
-
-        case TapState::BARREL:
-            isSucceded = moveTap(TAP_BARREL);
-            break;
-        
-        default:
-            break;
-    }
-
-    // Mentjük az állapotot ha sikerült a beállítás
-    if(isSucceded)
-        tapState = state;
-
-    return isSucceded;
-}
 
 
 
@@ -83,6 +53,38 @@ bool moveTap(int angle){
 
     // Motor befékezése
     setDcMotor(MotorState::BRAKE);
+
+    return isSucceded;
+}
+
+/* Csap beállítása */
+bool SetTap(TapState state){
+
+    if(tapState == state) { return true; }
+
+    bool isSucceded;
+
+    switch (state)
+    {
+        case TapState::CLOSE:
+            isSucceded = moveTap(TAP_CLOSED);
+            break;
+
+        case TapState::WATERTANK:
+            isSucceded = moveTap(TAP_WATERTANK);
+            break;
+
+        case TapState::BARREL:
+            isSucceded = moveTap(TAP_BARREL);
+            break;
+        
+        default:
+            break;
+    }
+
+    // Mentjük az állapotot ha sikerült a beállítás
+    if(isSucceded)
+        tapState = state;
 
     return isSucceded;
 }

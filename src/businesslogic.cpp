@@ -134,7 +134,7 @@ void SeparateState(){
         setSeparateScreen();
 
         /* Csap beállítása */
-        SetTap(TapState::TANK);
+        SetTap(TapState::WATERTANK);
 
         // Időzítés (Timeout)
         globalTimer = millis() + SEPARATE_TIMEOUT;

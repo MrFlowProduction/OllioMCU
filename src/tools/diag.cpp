@@ -3,7 +3,7 @@
 #include <tools/expander.h>
 
 /* Rendszerhiba dobása, üzemképtelen állapot */
-void dropFaulty(String text, int code){
+void dropFaulty(String text, int code, bool loopForever){
 
     Serial.println("System Fault");
     Serial.print("Message: ");
@@ -11,7 +11,7 @@ void dropFaulty(String text, int code){
 
     setFaultScreen(text, code);
 
-    while(true){
+    while(loopForever){
         delay(500);
     }
 

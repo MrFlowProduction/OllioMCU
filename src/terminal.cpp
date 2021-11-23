@@ -134,33 +134,12 @@ void terminal_handler()
       print_scale_values();
     }
 
-    else if (temp == "readsens")
-    {
-      /*
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("Sensor table");
-      
-      Serial.println("Reading sensors:");
-      
-      lcd.setCursor(0,1);
-      int val = getSensValue(DOOR_SENSOR);
-      lcd.print("Door Sensor: "+String(val));
-      Serial.println("DOOR sensor:"+String(val));
-      
-      lcd.setCursor(0,2);
-      val = getSensValue(TANK_SENSOR);
-      lcd.print("TANK Sensor: "+String(val));
-      Serial.println("TANK sensor:"+String(val));
-      
-      lcd.setCursor(0,3);
-      val = getSensValue(USER_BUTTON);
-      lcd.print("USER Button: "+String(val));
-      Serial.println("USER_BUTTON:"+String(val));
+    else if (temp == "set date"){
+      dateTimeTerminal();
+    }
 
-      INIT_SCALE();
-      acquire_reading();
-      */
+    else if(temp == "print date"){
+      showDate("Now:", now());
     }
 
     else if (temp == "printer test")
@@ -207,4 +186,135 @@ void terminal_handler()
       Serial.printf("Unknown command: %s\n", buf);
     }
   }
+}
+
+
+
+/* várakozás a terminálra */
+void waitToAnsware() {
+
+  while (Serial.available() == 0) {
+    delay(10);
+  }
+
+}
+
+
+/* Egy sor beolvasása a terminálból */
+String readLine() {
+  waitToAnsware();
+
+  String line = "";
+  char c;
+
+  while (Serial.available() > 0) {
+    c = (char)Serial.read();
+    if (c == '\r') {
+      continue;
+    }
+    if (c == '\n') {
+      return line;
+    }
+
+    line += c;
+
+    delay(1);
+    
+  }
+
+  return line;
+}
+
+
+/* Karakterből byte szám */
+byte charToByte(char c) {
+
+  switch (c) {
+
+    case '0':
+      return 0;
+    case '1':
+      return 1;
+    case '2':
+      return 2;
+    case '3':
+      return 3;
+    case '4':
+      return 4;
+    case '5':
+      return 5;
+    case '6':
+      return 6;
+    case '7':
+      return 7;
+    case '8':
+      return 8;
+    case '9':
+      return 9;
+
+  }
+
+  return 0;
+
+}
+
+
+
+/* DateTime terminál */
+void dateTimeTerminal(){
+  Serial.print("\nPlease add current datetime!\nYear:");
+
+  String row;
+  uint16_t y,M,d,h,m;
+  byte indexer = 0;
+
+  while (true)
+  {
+    row = readLine();
+
+    // Exit point
+    if(row == "#") break;
+
+    switch (indexer++)
+    {
+      case 0:
+        y = row.toInt();
+        Serial.println(y);
+        Serial.println("Month:");
+        break;
+
+      case 1:
+        M = row.toInt();
+        Serial.println(M);
+        Serial.print("Day:");
+        break;
+
+      case 2:
+        d = row.toInt();
+        Serial.println(d);
+        Serial.print("Hour:");
+        break;
+
+      case 3:
+        h = row.toInt();
+        Serial.println(y);
+        Serial.print("Min:");
+        break;
+
+      case 4:
+        m = row.toInt();
+        Serial.println(y);
+        Serial.println("Saving...");
+        setDate(DateTime(y,M,d,h,m,0));
+        printdone();
+        return;
+      
+      default:
+        indexer = 0;
+        break;
+    }
+
+
+  }
+  
 }

@@ -73,7 +73,7 @@ bool printerHasPaper(){
 void printBlock(){
     printer.setDefault();
 
-
+    printer.println();
     printer.setFont('A');
     printer.setSize('L');
     printer.boldOn();
@@ -101,6 +101,11 @@ void printBlock(){
     printer.print(meas.weight,2);
     printer.println(" Kg");
     
+    printer.feed(1);
+
+    printer.print("Block date: ");
+    printer.println(dateToString(now()));
+
     printer.feed(1);
 
     printer.setBarcodeHeight(50);

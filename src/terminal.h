@@ -8,6 +8,7 @@
 #include <tools/printer.h>
 #include <tools/mem.h>
 #include <tools/systools.h>
+#include <tools/rtc.h>
 
 void INIT_TERMINAL();
 
@@ -32,5 +33,7 @@ void printinit(String, bool = false);
 void printreason(String, bool = false);
 
 void terminal_handler();
+
+void dateTimeTerminal();
 
 #endif /* TERMINAL_H */
