@@ -6,9 +6,13 @@
 #include <tools/expander.h>
 #include <general/enum.h>
 #include <general/globals.h>
+#include <tools/diag.h>
 
 /* Csap beállítása */
 bool SetTap(TapState);
+
+/* Csap inicializálása, állapot */
+void INIT_TAP(void);
 
 
 #endif

@@ -9,28 +9,12 @@
 #include <tools/mem.h>
 #include <tools/systools.h>
 #include <tools/rtc.h>
+#include <tools/tap.h>
+#include <tools/expander.h>
 
 void INIT_TERMINAL();
 
-void printSysData(char*);
 
-void printtestpassed();
-
-void printtestfailed();
-
-void printready();
-
-void printdone();
-
-void printfail();
-
-void printok();
-
-void printerror();
-
-void printinit(String, bool = false);
-
-void printreason(String, bool = false);
 
 void terminal_handler();
 

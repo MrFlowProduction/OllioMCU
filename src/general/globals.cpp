@@ -3,8 +3,8 @@
 // ========================================================================================================
 // TYPE             NAME                    DEF. VALUE         DESCRIPTION
 // ========================================================================================================
-char                wifi_ssid[] =           "Anna & Flori"; // Router SSID
-char                wifi_pass[] =           "pO5NNrc6";     // Router Password
+char*               ssid =                  "Anna & Flori"; // Router SSID
+char*               pass =                  "pO5NNrc6";     // Router Password
 bool                terminal_enabled =      true;           // Terminal enabled
 bool                wifi_connected =        false;          // Wifi is connected
 bool                isExpanderReady =       false;          // MCP23017 I/O Expander Module is ready to use
@@ -25,6 +25,8 @@ float               progress;                               // Current progress 
 float               last_meas =             0;              // Legutolsó lemért olaj mennyisége
 int                 block_id =              1000;           // Blokk azonosító (inkrementálni kell)
 Measurement         meas;
+bool                isRtcOk =               true;           // RTC frissítve
+bool                stateTempVariable =     false;
 // Screen
 // ========================================================================================================
 unsigned long       screen_update_timer =   0;              // Kijelző frissítés időzítője
@@ -46,3 +48,8 @@ volatile byte       error_code =            0;              // Hibakód
 // ========================================================================================================
 
 bool                blink;
+
+// ========================================================================================================
+WifiState           wifiStat = WifiState::NOWIFI;
+bool                wifiIsConnected =       false;
+bool                wifiStateHandled =      true;

@@ -1,18 +1,19 @@
 #include <businesslogic.h>
 
-
-enum _ErrorSource{
+enum _ErrorSource
+{
     Unknown,
     Lid
 };
 
 _ErrorSource _source = Unknown;
 
-
 /* Állapot váltása */
-void ChangeState(MachineState newState){
+void ChangeState(MachineState newState)
+{
 
-    if(statePoint == newState){
+    if (statePoint == newState)
+    {
         stateChanged = false;
         return;
     }
@@ -21,14 +22,14 @@ void ChangeState(MachineState newState){
     stateChanged = true;
 }
 
-
-
 /* Alapállapot csak kizárólag az indító állapotot figyeli */
-void DefaultState(){
-    
+void DefaultState()
+{
+
     // Állapotváltozás
-    if(stateChanged){
-        
+    if (stateChanged)
+    {
+        Serial.println("Start Default State");
         isButtonPressed = false;
         isDoorChanged = true;
         stateChanged = false;
@@ -36,14 +37,17 @@ void DefaultState(){
     }
 
     // Fedél figyelése
-    if(isDoorChanged){
+    if (isDoorChanged)
+    {
 
-        if(isDoorOpened){   // Fedél nyitva
+        if (isDoorOpened)
+        { // Fedél nyitva
             setButtonLight(OFF);
             closeDownScreen();
             isButtonPressed = false;
         }
-        else{               // Fedél csukva
+        else
+        { // Fedél csukva
             defaultScreen();
             setButtonLight(ON);
         }
@@ -52,13 +56,15 @@ void DefaultState(){
     }
 
     // Szervizmódba lépés
-    if(isServiceButtonPressed){
+    if (isServiceButtonPressed)
+    {
         ChangeState(MachineState::SERVICE);
         isServiceButtonPressed = false;
     }
 
     // Mérés indítása
-    if(!isDoorOpened && isButtonPressed && !isTankFull){
+    if (!isDoorOpened && isButtonPressed && !isTankFull)
+    {
         ChangeState(MachineState::SHORTING);
         isButtonPressed = false;
     }
@@ -66,33 +72,53 @@ void DefaultState(){
     isButtonPressed = false;
 }
 
-
 /* Zárás Állapot */
-void ClosingState(){
+void ClosingState()
+{
     task_scale_isEnabled = false;
     task_ads_isEnabled = false;
     SetTap(TapState::CLOSE);
     meas = Measurement();
 }
 
-
 /* Indulási Állapot */
-void NoneState(){
+void NoneState()
+{
 
-    setNoneScreen();
-    setButtonLight(ON);
+    if (!stateTempVariable)
+    {
+        setNoneScreen();
+        setButtonLight(ON);
+    }
 
-    delay(3000);
+    stateTempVariable = true;
+
+    delay(1000);
+
+    // // if (!wifiIsConnected)
+    // // {
+    // //     printTag("Kapcsolodas...");
+    // //     return;
+    // // }
+
+    // // if (!isRtcOk)
+    // // {
+    // //     printTag("Ido frissitese...");
+    // //     return;
+    // // }
 
     ChangeState(MachineState::DEF);
     setButtonLight(OFF);
+    stateTempVariable = false;
 }
 
 /* Betöltött Olaj osztályozása */
-void ShortingState(){
-    
+void ShortingState()
+{
+
     // Állapotváltozás
-    if(stateChanged){
+    if (stateChanged)
+    {
         setShortingScreen();
         setButtonLight(OFF);
         globalTimer = millis() + MEAS_TIME;
@@ -103,7 +129,10 @@ void ShortingState(){
     updateShortingScreen();
 
     // DELAY a rendszerben
-    if(globalTimer > millis()){ return; }
+    if (globalTimer > millis())
+    {
+        return;
+    }
 
     setProbeSupply(ON);
 
@@ -113,23 +142,27 @@ void ShortingState(){
     meas.quality = readProbeVoltage();
     meas.isGoodQuality = readProbeVoltage() < QLTY_VOLTAGE;
 
-    if(meas.isGoodQuality){
+    if (meas.isGoodQuality)
+    {
         ChangeState(MachineState::MEASURE);
     }
-    else{
+    else
+    {
         ChangeState(MachineState::SEPARATE);
     }
 
     setProbeSupply(OFF);
-
 }
 
-
 /* Beöltött olaj tisztítása */
-void SeparateState(){
+void SeparateState()
+{
 
     // Állapotváltozás
-    if(stateChanged){
+    if (stateChanged)
+    {
+        Serial.println("Start Separete State");
+
         setProbeSupply(ON);
         setSeparateScreen();
 
@@ -144,20 +177,26 @@ void SeparateState(){
     updateSeparateScreen();
 
     // Timeout (időtúllépés)
-    if(globalTimer < millis()){ return; }    
-
-    // Olaj minőségének ellenőrzése
-    if(readProbeVoltage() < QLTY_VOLTAGE){
-        ChangeState(MachineState::MEASURE);
+    if (globalTimer < millis())
+    {
+        return;
     }
 
+    // Olaj minőségének ellenőrzése
+    if (readProbeVoltage() < QLTY_VOLTAGE)
+    {
+        ChangeState(MachineState::MEASURE);
+    }
 }
 
 /* Mérés */
-void MeasState(){
-   
-   // Állapotváltozás
-    if(stateChanged){
+void MeasState()
+{
+
+    // Állapotváltozás
+    if (stateChanged)
+    {
+        Serial.println("Start Meas State");
         setProbeSupply(ON);
         setMeasureScreen();
 
@@ -174,10 +213,13 @@ void MeasState(){
         stateChanged = false;
     }
 
+    updateMeasureScreen();
+
     float result = read_scale();
 
     // Mérés kiértékelése, kevesebb nem lehet
-    if(result > last_meas){
+    if (result > last_meas)
+    {
         last_meas = result;
     }
 
@@ -185,7 +227,8 @@ void MeasState(){
     updateMeasure(last_meas);
 
     // Ha már üres a felső edény, akkor lezárjuk a folyamatot
-    if(readProbeVoltage() < NO_LIQUID_VOLT){
+    if (readProbeVoltage() < NO_LIQUID_VOLT)
+    {
         /* Csap Zárása */
         SetTap(TapState::BARREL);
         setProbeSupply(OFF);
@@ -198,12 +241,14 @@ void MeasState(){
     }
 }
 
-
 /* Nyomtatás */
-void PrintingState(){
+void PrintingState()
+{
 
     // Állapotváltozás
-    if(stateChanged){
+    if (stateChanged)
+    {
+        Serial.println("Start Printing State");
         setPrintingScreen();
         stateChanged = false;
     }
@@ -213,15 +258,16 @@ void PrintingState(){
 
     // Visszaállás alapállapotra
     ChangeState(MachineState::SYSCHECK);
-
 }
 
-
-void ServiceState(){
+void ServiceState()
+{
 
     // Állapotváltozás
-    if(stateChanged){
-        //setServiceScreen();
+    if (stateChanged)
+    {
+        Serial.println("Start Service State");
+        setServiceScreen();
         lcd.clear();
         stateChanged = false;
     }
@@ -230,26 +276,29 @@ void ServiceState(){
     setServiceLight(blink);
     setButtonLight(blink);
 
-    setServiceScreen();
+    updateServiceScreen();
 
-    if(isServiceButtonPressed){
+    if (isServiceButtonPressed)
+    {
         isServiceButtonPressed = false;
+        setNextScreen();
     }
 
-    if(isButtonPressed)
+    if (isButtonPressed)
         isButtonPressed = false;
 }
 
-
-void FaultState(){
-
+void FaultState()
+{
 }
 
-
-void SystemCheckState(){
+void SystemCheckState()
+{
 
     // Állapotváltozás
-    if(stateChanged){
+    if (stateChanged)
+    {
+        Serial.println("Start SysCheck State");
         setSyscheckScreen();
         stateChanged = false;
         return;
@@ -261,74 +310,70 @@ void SystemCheckState(){
     ChangeState(MachineState::DEF);
 }
 
-
-
-void Reset(){
+void Reset()
+{
     error_code = ERROR_NONE;
 }
 
-
 /* Hibaállapot, amit üzemközben jön elő */
-void ErrorState(){
-   
+void ErrorState()
+{
 }
 
-
-
-void stateMachine(){
+void stateMachine()
+{
 
     switch (statePoint)
     {
 
-        case NONE:
-            NoneState();
-            break;
+    case NONE:
+        NoneState();
+        break;
 
-        case DEF:
-            DefaultState();
-            break;
+    case DEF:
+        DefaultState();
+        break;
 
-        case SHORTING:
-            ShortingState();
-            break;
+    case SHORTING:
+        ShortingState();
+        break;
 
-        case SEPARATE:
-            SeparateState();
-            break;
+    case SEPARATE:
+        SeparateState();
+        break;
 
-        case MEASURE:
-            MeasState();
-            break;
-        
-        case PRINTING:
-            PrintingState();
-            break;
-        
-        case CLOSING:
-            ClosingState();
-            break;
+    case MEASURE:
+        MeasState();
+        break;
 
-        case SERVICE:
-            ServiceState();
-            break;
+    case PRINTING:
+        PrintingState();
+        break;
 
-        case SYSCHECK:
-            SystemCheckState();
-            break;
-        
-        case FAULT: // Fedél nyitva üzem közben, szenzor hiba, szelep hiba, kijelző hiba, rendszer hiba
-            ErrorState();
-            break;
+    case CLOSING:
+        ClosingState();
+        break;
 
-        default:
-            break;
+    case SERVICE:
+        ServiceState();
+        break;
+
+    case SYSCHECK:
+        SystemCheckState();
+        break;
+
+    case FAULT: // Fedél nyitva üzem közben, szenzor hiba, szelep hiba, kijelző hiba, rendszer hiba
+        ErrorState();
+        break;
+
+    default:
+        break;
     }
-
 }
 
-
 /* Alapvető rendszer cuccok inicializálása */
-void INIT_MACHINE(){
+void INIT_MACHINE()
+{
     Serial.println(F("\n================= Ollio Firmware =================\nVersion: "));
     Serial.println(VERSION);
     Serial.print(F("Creator: "));

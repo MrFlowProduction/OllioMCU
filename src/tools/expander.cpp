@@ -174,7 +174,7 @@ void setDcMotorPins(bool in1, bool in2, bool enable){
     if(!isMcpConnected){ return; }
 
     mcp.digitalWrite(DC_IN1, in1);
-    mcp.digitalWrite(DC_IN2, in1);
+    mcp.digitalWrite(DC_IN2, in2);
     mcp.digitalWrite(DC_EN, enable);
 
 }

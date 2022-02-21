@@ -1,6 +1,7 @@
 #include <tools/rtc.h>
 
 RTC_DS3231 rtc;
+unsigned long rtc_refresh_timer;
 
 void INIT_RTC(){
 
@@ -11,11 +12,10 @@ void INIT_RTC(){
         return;
     }
 
-    if(rtc.lostPower()){
-        dropFaulty("RTC lost power", ERROR_RTC_LOST_POWER);
-        dateTimeTerminal();
-
-    }
+    //if(rtc.lostPower()){
+    //    dropFaulty("RTC lost power", ERROR_RTC_LOST_POWER);
+    //    dateTimeTerminal();
+    //}
 
     // Hőmérséklet kiíratása
     Serial.print("Temperature: ");
@@ -31,6 +31,10 @@ void INIT_RTC(){
 
 void setDate(const DateTime& date){
     rtc.adjust(date);
+}
+
+void setDate(int year, int month, int day, int hour, int minute, int second){
+    setDate(DateTime(year, month, day, hour, minute, second));
 }
 
 
@@ -118,4 +122,23 @@ void showTimeSpan(const char* txt, TimeSpan& ts) {
     Serial.println();
 }
 
+/* RTC frissítése NTP-ről */
+void rtc_refresh(){
 
+    if(RTC_REFRESH == 0) return;
+
+    if(wifiIsConnected && millis() > rtc_refresh_timer){
+
+        struct tm tim;
+        if(getLocalTime(&tim)){
+            Serial.println("Refresh RTC...");
+            setDate(tim.tm_year + 1900, tim.tm_mon + 1, tim.tm_mday, tim.tm_hour, tim.tm_min, tim.tm_sec);
+            showDate("RTC Refreshed: ", now());
+            rtc_refresh_timer = millis() + (RTC_REFRESH * 1000);
+            isRtcOk = true;
+        }
+
+        
+    }   
+
+}

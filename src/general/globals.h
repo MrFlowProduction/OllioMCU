@@ -9,8 +9,8 @@
 // ========================================================================================================
 // TYPE                     NAME                    DEF. VALUE         DESCRIPTION
 // ========================================================================================================
-extern char                 wifi_ssid[]; // Router SSID
-extern char                 wifi_pass[];     // Router Password
+extern char*                ssid; // Router SSID
+extern char*                pass;     // Router Password
 extern bool                 terminal_enabled;
 extern bool                 wifi_connected;
 extern bool                 isExpanderReady;
@@ -43,6 +43,11 @@ extern byte                 screen_max_state_number;
 extern uint                 screen_state_delay;
 extern bool                 screen_first_update;
 extern Measurement          meas;
+extern WifiState            wifiStat;
+extern bool                 wifiIsConnected;
+extern bool                 wifiStateHandled;
+extern bool                 isRtcOk;
+extern bool                 stateTempVariable;
 
 //extern int                  machineState;
 // ========================================================================================================

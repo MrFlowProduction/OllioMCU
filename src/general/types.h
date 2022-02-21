@@ -6,12 +6,12 @@
 
 
 /* Egy mérés összes adata */
-typedef struct Measurement
+struct Measurement
 {
     float quality;
     float weight;
     bool isGoodQuality;
-} Measurement;
+};
 
 
 

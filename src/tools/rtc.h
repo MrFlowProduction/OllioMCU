@@ -30,4 +30,7 @@ String dateToString(const DateTime dt);
 /* Idő kiíratása */
 void showTimeSpan(const char*, const TimeSpan&);
 
+/* RTC frissítés NTP-ről */
+void rtc_refresh();
+
 #endif

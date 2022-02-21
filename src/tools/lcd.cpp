@@ -100,14 +100,13 @@ bool nextScreenState(){
 
   if(screen_update_timer > millis()){ return false; }
 
-  if(++screen_state >= screen_max_state_number){
-      screen_state = 0;
-  }
+  setNextScreen();
 
   screen_update_timer = millis() + screen_state_delay;
 
   return true;
 }
+
 
 
 /* Következő állapot */
@@ -117,13 +116,17 @@ bool nextScreenState(int delay){
 
   if(screen_update_timer > millis()){ return false; }
 
-  if(++screen_state >= screen_max_state_number){
-      screen_state = 0;
-  }
+  setNextScreen();
 
   screen_update_timer = millis() + delay;
 
   return true;
+}
+
+void setNextScreen(){
+  if(++screen_state >= screen_max_state_number){
+      screen_state = 0;
+  }
 }
 
 /* Kijelző állapotmotor alaphelyzetbe állítása */
@@ -150,6 +153,13 @@ void setScreenDelay(int delay){
     screen_state_delay = delay;
 }
 
+
+void printTag(String text){
+  lcd.setCursor(0,3);
+  lcd.print("                    ");
+  lcd.setCursor(0,3);
+  lcd.print(text);
+}
 
 
 
@@ -460,11 +470,9 @@ void setPrintingScreen() {
   lcd.print("Blokk nyomtatasa...");
 }
 
-/* Szervizképernyő mindenféle finomsággal */
-void setServiceScreen(){
-    
 
-    lcd.setCursor(0,0);
+void serviceScreen1(){
+  lcd.setCursor(0,0);
     lcd.print("D:");
     if(isDoorOpened) lcd.print("O");
     else lcd.print("C");
@@ -479,14 +487,14 @@ void setServiceScreen(){
     lcd.print(isButtonPressed);
 
     lcd.setCursor(12,0);
-    lcd.print("S:");
+    lcd.print("R:");
     lcd.print(isServiceButtonPressed);
 
     lcd.setCursor(0,1);
     lcd.print("                    ");
     lcd.setCursor(0,1);
     lcd.print("Probe: ");
-    lcd.print(readProbeVoltage(), 6);
+    lcd.print(readProbeVoltage(), 3);
     lcd.print("V");
 
     lcd.setCursor(0,2);
@@ -500,8 +508,57 @@ void setServiceScreen(){
 
     lcd.setCursor(0,3);
     lcd.print("Scale: ");
-    lcd.print(read_scale(), 4);
+    lcd.print(read_scale());
 
+}
+
+
+void serviceScreen2(){
+
+  // WIFI
+  lcd.setCursor(0,0);
+  if(wifiIsConnected)
+     lcd.print("Connected   ");
+  else lcd.print("Disconnected");
+
+  // RTC
+  lcd.setCursor(0,1);
+  if(isRtcOk) lcd.print("RTC OK  ");
+  else lcd.print("RTC FAIL"); 
+  lcd.print(rtcTemp(), 1);
+
+  lcd.setCursor(0,2);
+
+  delay(1500);
+
+}
+
+
+/* Szervizképernyő mindenféle finomsággal */
+void setServiceScreen(){
+    clearScreen();
+    setScreenStates(2, 0);
+    serviceScreen1();
+}
+
+void updateServiceScreen(){
+
+  lcd.clear();
+
+  switch (screen_state)
+  {
+
+    case 0:
+      serviceScreen1();
+      break;
+
+    case 1:
+      serviceScreen2();
+      break;
+    
+    default:
+      break;
+  }
 }
 
 

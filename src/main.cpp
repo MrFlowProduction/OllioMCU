@@ -9,8 +9,7 @@
 #include <businesslogic.h>
 #include <tools/printer.h>
 #include <tools/diag.h>
-
-
+#include <tools/radio.h>
 
 
 
@@ -21,8 +20,11 @@ void setup() {
     INIT_LEDS();
     INIT_SCALE();
     INIT_ADC();
+    INIT_TAP();
     INIT_PRINTER();
     INIT_MACHINE();
+    INIT_RTC();
+    INIT_RADIO();
 
     syscheck();
 }
@@ -31,4 +33,5 @@ void loop() {
   InitExpanderStates();
   terminal_handler();
   stateMachine();
+  rtc_refresh();
 }

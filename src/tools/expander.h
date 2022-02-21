@@ -4,7 +4,6 @@
 #include <Arduino.h> /* we need arduino functions to implement this */
 #include <Wire.h>
 #include <Adafruit_MCP23017.h>
-#include <terminal.h>
 #include <tools/systools.h>
 #include <general/pinout.h>
 #include <general/globals.h>

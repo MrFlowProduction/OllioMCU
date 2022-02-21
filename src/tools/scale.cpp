@@ -77,17 +77,17 @@ void calibrateScale(){
 /* Mérleg olvasása */
 float read_scale(){
 
-    float value, counter;
+    // float value, counter;
 
-    unsigned long timer = millis() + 1000;
+    // unsigned long timer = millis() + 1000;
 
-    while(timer > millis()){
-        value += scale.read()/100.0;
+    // while(timer > millis()){
+    //     value += scale.read()/100.0;
 
-        counter++;
-    }
+    //     counter++;
+    // }
 
-    return value / counter;
+    // return value / counter;
     
     return scale.get_units(SCALE_SAMPLE);
 }

@@ -44,6 +44,9 @@ void setNoneScreen();
 
 /* Display init screen */
 void setStartScreen();
+
+/* Alsó sorba szöveg kiírása */
+void printTag(String);
  
 /* Display analog measurements and its process feedback */
 void setShortingScreen();
@@ -72,6 +75,9 @@ void setPrintingScreen();
 /* Szervizképernyő mindenféle finomsággal */
 void setServiceScreen();
 
+/* Szervizképernyő frissítése */
+void updateServiceScreen();
+
 /* Display process termination and reset */
 void setClosingScreen();
 
@@ -84,5 +90,7 @@ void setFaultScreen(String, int);
 /* Rendszerteszt képernyője */
 void setSyscheckScreen();
 
+/* Következő képernyőre váltás */
+void setNextScreen();
 
 #endif

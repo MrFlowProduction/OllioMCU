@@ -43,6 +43,15 @@ enum MachineState {
 };
 
 
+enum WifiState {
+    NOWIFI,
+    CONNECTING,
+    CONNECTED,
+    DISCONNECTED,
+    NORADIO
+};
+
+
 // Error codes
 #define ERROR_NONE 1000
 #define ERROR_DOOR_SENSOR_OPEN 1010

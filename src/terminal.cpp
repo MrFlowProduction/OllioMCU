@@ -1,78 +1,22 @@
 #include <terminal.h>
 #include <string.h>
 #include <tools/scale.h>
+#include <time.h>
 
 void INIT_TERMINAL()
 {
   Serial.begin(BAUDRATE);
 }
 
-void printSysData(char *version)
+
+void printLocalTime()
 {
-
-  Serial.print(F("\nOllio Firmware "));
-  Serial.println(version);
-}
-
-void printtestpassed()
-{
-  Serial.println(F("[TEST PASSED]\n"));
-}
-
-void printtestfailed()
-{
-  Serial.println(F("[TEST FAILED]\n"));
-}
-
-void printready()
-{
-  Serial.println(F("[RDY]"));
-}
-
-void printdone()
-{
-  Serial.println(F("[DONE]"));
-}
-
-void printfail()
-{
-  Serial.println(F("[FAIL]"));
-}
-
-void printok()
-{
-  Serial.println(F("[OK]"));
-}
-
-void printerror()
-{
-  Serial.println(F("[ERROR]"));
-}
-
-void printinit(String text, bool withNewLine)
-{
-
-  Serial.print(F("\n[INIT]\n"));
-  Serial.print(text);
-  Serial.print("...");
-
-  if (withNewLine)
-  {
-    Serial.println();
+  struct tm timeinfo;
+  if(!getLocalTime(&timeinfo)){
+    Serial.println("Failed to obtain time");
+    return;
   }
-}
-
-void printreason(String text, bool withFail)
-{
-
-  if (withFail)
-  {
-    printfail();
-  }
-
-  Serial.print(F("[REASON]: "));
-  Serial.print(text);
-  Serial.println();
+  Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
 }
 
 void terminal_handler()
@@ -142,6 +86,10 @@ void terminal_handler()
       showDate("Now:", now());
     }
 
+    else if(temp == "ntp date"){
+      printLocalTime();
+    }
+
     else if (temp == "printer test")
     {
       print_test();
@@ -176,6 +124,40 @@ void terminal_handler()
       }
       progress = temp.toFloat();
       Serial.printf("progress set to %.1f%%\n", progress);
+    }
+
+    else if (temp == "forward"){
+      setDcMotor(MotorState::FORWARD);
+    }
+
+    else if (temp == "backward"){
+      setDcMotor(MotorState::BACKWARD);
+    }
+
+    else if (temp == "stop"){
+      setDcMotor(MotorState::STOP);
+    }
+
+    else if (temp == "brake"){
+      setDcMotor(MotorState::BRAKE);
+    }
+
+    else if(temp == "barrel"){
+      Serial.println("MOVING...");
+      SetTap(TapState::BARREL);
+      Serial.println("OK");
+    }
+
+    else if(temp == "close"){
+       Serial.println("MOVING...");
+      SetTap(TapState::CLOSE);
+      Serial.println("OK");
+    }
+
+    else if(temp == "watertank"){
+       Serial.println("MOVING...");
+      SetTap(TapState::WATERTANK);
+      Serial.println("OK");
     }
 
     else
@@ -257,6 +239,9 @@ byte charToByte(char c) {
   return 0;
 
 }
+
+
+
 
 
 
