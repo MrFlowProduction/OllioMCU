@@ -32,6 +32,12 @@ void saveAngleToTap(TapState, int);
 /* Csap alaphelyzetbe állítás paraméterének változtatása */
 void changeTapInitEn(bool);
 
+/* Mérleg kalibráció érték módosítása */
+void saveScaleCalibFactor(float value);
+
+/* Mérleg offset mentése */
+void saveScaleOffset(long offset);
+
 /* Ellenőrzi a memórába meglévő adatokat, ha hiányoznak beírja az alapértéküket */
 void mem_init(void);
 

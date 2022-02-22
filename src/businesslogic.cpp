@@ -78,6 +78,7 @@ void ClosingState()
     task_scale_isEnabled = false;
     task_ads_isEnabled = false;
     SetTap(TapState::CLOSE);
+    resetScale();
     meas = Measurement();
 }
 
@@ -197,7 +198,6 @@ void MeasState()
     if (stateChanged)
     {
         Serial.println("Start Meas State");
-        setProbeSupply(ON);
         setMeasureScreen();
 
         last_meas = 0;
@@ -209,7 +209,7 @@ void MeasState()
         SetTap(TapState::BARREL);
 
         // Időzítés (Timeout)
-        globalTimer = millis() + SEPARATE_TIMEOUT;
+        globalTimer = millis() + MEAS_WEIGHT_TIME;
         stateChanged = false;
     }
 
@@ -221,19 +221,18 @@ void MeasState()
     if (result > last_meas)
     {
         last_meas = result;
+        globalTimer = millis() + MEAS_WEIGHT_TIME;
     }
 
     // Mérleg értékének kiírása
     updateMeasure(last_meas);
 
     // Ha már üres a felső edény, akkor lezárjuk a folyamatot
-    if (readProbeVoltage() < NO_LIQUID_VOLT)
+    if (globalTimer <= millis())
     {
         /* Csap Zárása */
         SetTap(TapState::CLOSE);
-        setProbeSupply(OFF);
-        // TODO: Read Weight and save
-
+        
         meas.weight = last_meas;
 
         // Nyomtatás

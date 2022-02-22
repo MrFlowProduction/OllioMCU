@@ -11,6 +11,7 @@
 #include <tools/rtc.h>
 #include <tools/tap.h>
 #include <tools/expander.h>
+#include <businesslogic.h>
 
 void INIT_TERMINAL();
 

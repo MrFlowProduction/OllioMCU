@@ -12,14 +12,18 @@
 #define QLTY_VOLTAGE        1.5                     // Olaj minimum minőség (Voltban)
 #define NO_LIQUID_VOLT      0.5                     // Olaj minimum minőség (Voltban)
 #define SEPARATE_TIMEOUT    30000                   // Szeparálás időzítése
-#define SCALE_SAMPLE        2                       // Mérleg mintavétel
+#define SCALE_SAMPLE        5                       // Mérleg mintavétel
 #define BLOCK_NUMBER        10000                   // Kezdő blokk azonosító
-#define VERSION             "build 1.0.112a"        // Verziószám
+#define VERSION             "build 1.0.114a"        // Verziószám
 #define CREATOR             "by Mr.Flow Production" // Készítő
 #define TAP_ANGLE_HIST      1                       // Csap szögeltérésének plusz-minusz e-ngedélye
 #define TAP_TIMEOUT         20000                   // Csap időtúllépése arra az esetre ha megszorulna vagy a motor nem reagálna
 #define WIFI_AP_SSID        "Ollio AP"              // AP módhoz a wifi név
 #define RTC_REFRESH         3600                    // RTC automatikus frissítésének intervalluma másodpercben
+#define MEAS_WEIGHT_TIME    5000                    // Súlymérésnél az időeltolás
+#define COMPANY             "Ollio Kft."            
+
+
 // =============================================================================================
 
 

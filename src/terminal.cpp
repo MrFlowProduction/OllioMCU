@@ -100,32 +100,6 @@ void terminal_handler()
       calibrateScale();
     }
 
-    else if (temp == "progress")
-    {
-      Serial.println("Give me a percentage value from 1 to 100:");
-
-      boolean waitForNum = true;
-      //char array[4];
-      while (waitForNum)
-      {
-
-        temp = Serial.readStringUntil('\n');
-        temp.trim();
-        //unsigned int n = temp.length();
-        //Serial.println(n);
-        //temp.toFloat();
-        //temp.toCharArray(array, n);
-        if (temp != NULL)
-        {
-          waitForNum = false;
-        }
-        Serial.println(temp);
-        delay(1);
-      }
-      progress = temp.toFloat();
-      Serial.printf("progress set to %.1f%%\n", progress);
-    }
-
     else if (temp == "forward"){
       setDcMotor(MotorState::FORWARD);
     }
@@ -183,6 +157,30 @@ void terminal_handler()
 
     else if(temp == "tap disable init"){
       changeTapInitEn(false);
+    }
+
+    else if(temp == "service mode"){
+      ChangeState(MachineState::SERVICE);
+    }
+
+    else if(temp == "set empty barrel"){
+      saveEmptyBarrelPoint();
+    }
+
+    else if(temp == "reset scale"){
+      resetScale();
+    }
+
+    else if(temp == "read scale"){
+      Serial.printf("Weight: %f Kg", read_scale());
+    }
+
+    else if(temp == "print scale values"){
+      print_scale_values();
+    }
+
+    else if(temp == "reboot" || temp == "reset"){
+      ESP.restart();
     }
 
     else

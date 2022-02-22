@@ -18,6 +18,9 @@ extern int m_counter;
 /* Alapvető állapotkezelő */
 void stateMachine();
 
+/* Állapot módosítása */
+void ChangeState(MachineState);
+
 /* Alapvető rendszer cuccok inicializálása */
 void INIT_MACHINE();
 

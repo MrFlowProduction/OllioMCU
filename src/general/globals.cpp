@@ -61,3 +61,10 @@ int                 tap_closed_angle =      0;              // Csap zárt állap
 int                 tap_barrel_angle =      120;            // Csap hordó fele álló szöge
 int                 tap_watertank_angle =   230;            // Csap víztartály felé nyíló szöge
 bool                tap_init_en =           false;          // Csap initkor alaphelyzetbe állítás engedélyezve van-e
+
+
+// SCALE
+// ========================================================================================================
+float               scale_calib_factor =    56.0;           // Mérleg kalibrációs értéke
+float               scale_zero_pointer =    0.0;            // Mérleg null pontja
+long                scale_last_offset =     0;              // Mérleg legutóbbi offsetje, a hordó zéró pointja

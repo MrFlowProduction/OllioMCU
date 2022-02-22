@@ -10,6 +10,8 @@ Preferences preferences;
 #define MEM_TAP_BARREL      "tap_barrel"
 #define MEM_TAP_WATERTANK   "tap_watertank"
 #define MEM_TAP_INIT_EN     "tap_init_en"
+#define MEM_SCALE_FACTOR    "scale_factor"
+#define MEM_SCALE_OFFSET    "scale_offset"
 
 
 
@@ -60,6 +62,29 @@ bool getMemBool(const char* key){
 }
 
 
+/* Memóriából kiolvas egy int-es értéket */
+float getMemFloat(const char* key){
+    float value;
+
+    preferences.begin(MEM_APPID, true);
+    value = preferences.getFloat(key);
+    preferences.end();
+
+    return value;
+}
+
+/* Memóriából kiolvas egy int-es értéket */
+long getMemLong(const char* key){
+    long value;
+
+    preferences.begin(MEM_APPID, true);
+    value = preferences.getLong(key);
+    preferences.end();
+
+    return value;
+}
+
+
 void setMem(const char* key, uint32_t value){
     preferences.begin(MEM_APPID, false);
     preferences.putUInt(key, value);
@@ -77,6 +102,19 @@ void setMem(const char* key, bool value){
     preferences.putBool(key, value);
     preferences.end();
 }
+
+void setMem(const char* key, float value){
+    preferences.begin(MEM_APPID, false);
+    preferences.putFloat(key, value);
+    preferences.end();
+}
+
+void setMem(const char* key, long value){
+    preferences.begin(MEM_APPID, false);
+    preferences.putLong(key, value);
+    preferences.end();
+}
+
 
 /* Blokk sorszámának beállítása */
 void setBlockNumber(uint32_t value){
@@ -136,6 +174,29 @@ bool mem_init_setting(const char* key, bool def_value){
 }
 
 
+/* Beállítás inicializálása, ha még nem létezik létrehozza */
+float mem_init_setting(const char* key, float def_value){
+    if(!mem_check_key(key)){
+        setMem(key, def_value);
+        Serial.printf("Creater new setting where KEY: %s and VALUE %d\n", key, def_value);
+        return def_value;
+    }
+
+    return getMemFloat(key);
+}
+
+
+/* Beállítás inicializálása, ha még nem létezik létrehozza */
+long mem_init_setting(const char* key, long def_value){
+    if(!mem_check_key(key)){
+        setMem(key, def_value);
+        Serial.printf("Creater new setting where KEY: %s and VALUE %d\n", key, def_value);
+        return def_value;
+    }
+
+    return getMemLong(key);
+}
+
 
 
 /* Csap állásokhoz tartozó Kulcs a memóriában */
@@ -171,11 +232,18 @@ void changeTapInitEn(bool enable){
     printdone();
 }
 
+/* Csap init paraméterének módosítása */
+void saveScaleCalibFactor(float value){
+    setMem(MEM_SCALE_FACTOR, value);
+}
+
+void saveScaleOffset(long offset){
+    setMem(MEM_SCALE_OFFSET, offset);
+}
+
 
 /* Ellenőrzi a memórába meglévő adatokat, ha hiányoznak beírja az alapértéküket */
 void mem_init(){
-
-
 
     if(!mem_check_key(MEM_BLOCKID)){
         setBlockNumber(BLOCK_NUMBER);
@@ -193,5 +261,11 @@ void mem_init(){
 
     // Tap init enable
     tap_init_en = mem_init_setting(MEM_TAP_INIT_EN, tap_init_en);
+
+    // Scale calib factor
+    scale_calib_factor = mem_init_setting(MEM_SCALE_FACTOR, scale_calib_factor);
+
+    // Scale last offset
+    scale_last_offset = mem_init_setting(MEM_SCALE_OFFSET, scale_last_offset);
 
 }

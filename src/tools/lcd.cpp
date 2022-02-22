@@ -509,6 +509,8 @@ void serviceScreen1(){
     lcd.print("Scale: ");
     lcd.print(read_scale());
 
+    delay(1000);
+
 }
 
 

@@ -9,109 +9,133 @@ HX711 scale;
 const int LOADCELL_DOUT_PIN = 25;
 const int LOADCELL_SCK_PIN = 33;
 
-// 2. Adjustment settings
-long ZERO_FACTOR = 2117;
-long LOADCELL_OFFSET = -7070 / 0.45359237; //LBS HELYETT KG-BAN KAPJUK AZ ÉRTÉKET
-const long LOADCELL_DIVIDER = 0.45359237;
-
-float calibration_factor = 56;
+#define LB2KG  0.45352
 
 /* Inicializálás */
 void INIT_SCALE(){
-    printinit("SCALE");
+    printinit("SCALE", true);
+
     scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN, 64);
-    scale.set_scale(calibration_factor);
-    scale.tare();
+    scale.set_scale(scale_calib_factor / LB2KG);
+    
+    // Még nincs offset, akkor az aktuálist veszi annak
+    if(scale_last_offset == 0){
+        saveEmptyBarrelPoint();
+    }
+
+    // Már van mentve offset, akkor azt állítja be
+    else 
+        scale.set_offset(scale_last_offset);
+    
 
     if(!scale.wait_ready_timeout(1000)){
         dropFaulty("ADC not available", 103);
         return;
     }
 
+    Serial.printf("Calib factor: %f\n", scale_calib_factor);
     Serial.println(scale.get_units(SCALE_SAMPLE));
    
     printdone();
 }
 
 
-/* Kalibráció */
+/* Mérleg kalibrálása */
 void calibrateScale(){
-
-    Serial.println("Calibrating scale, so have to clear everything from scale!");
-
-    Serial.println("Reset Scale");
-    scale.set_scale();
-    scale.tare();
-
-    Serial.println("Read avarage...");
-
-    long b = scale.read_average(); //Get a baseline reading
-    Serial.print("Zero factor (B): "); //This can be used to remove the need to tare the scale. Useful in permanent scale projects.
-    Serial.println(b);
-
-    Serial.println("Press key for continue");
-
-    while(!Serial.available()){ delay(1000); }
-
-
-    long x = scale.read_average();
-    long y = 86000;
-
-    double m = (double)(y-b)/x;
-
-    Serial.print("x: ");
-    Serial.println(x);
-
-    Serial.print("y: ");
-    Serial.println(y);
-
-    Serial.print("m: ");
-    Serial.println(m);
-
-    scale.set_offset(b);
-    scale.set_scale(m);
+    // calibiation
+    float CALWEIGHT = 4.0;
+    float calibration_factor = -7050;
+    boolean done = false;
+    uint8_t flipDirCount = 0;
+    int8_t direction = 1;
+    uint8_t dirScale = 100;
+    double data = abs(scale.get_units());
+    double prevData = data;
     
-}
 
+    while (!done)
+    {
+      // get data
+      data = abs(scale.get_units());
+      Serial.println("data = " + String(data, 2));
+      Serial.println("abs = " + String(abs(data - CALWEIGHT), 4));
+      Serial.println("calibration_factor = " + String(calibration_factor));
+      // if not match
+      if (abs(data - CALWEIGHT) >= 0.01)
+      {
+        if (abs(data - CALWEIGHT) < abs(prevData - CALWEIGHT) && direction != 1 && data < CALWEIGHT)
+        {
+          direction = 1;
+          flipDirCount++;
+        }
+        else if (abs(data - CALWEIGHT) >= abs(prevData - CALWEIGHT) && direction != -1 && data > CALWEIGHT)
+        {
+          direction = -1;
+          flipDirCount++;
+        }
+
+        if (flipDirCount > 2)
+        {
+          if (dirScale != 1)
+          {
+            dirScale = dirScale / 10;
+            flipDirCount = 0;
+            Serial.println("dirScale = " + String(dirScale));
+          }
+        }
+        // set new factor 
+        calibration_factor += direction * dirScale;
+        scale.set_scale(calibration_factor / LB2KG);
+        //short delay
+        delay(5);
+        // keep old data 
+        prevData = data;
+      }
+      // if match
+      else
+      {
+        Serial.println("NEW currentOffset = " + String(scale_last_offset));
+        Serial.println("NEW calibration_factor = " + String(calibration_factor));
+        done = true;
+      }
+
+    } // end while
+
+  scale.set_offset(scale_last_offset);
+  saveScaleCalibFactor(calibration_factor);
+  Serial.println("setup done ...");
+}
 
 /* Mérleg olvasása */
 float read_scale(){
-
-    // float value, counter;
-
-    // unsigned long timer = millis() + 1000;
-
-    // while(timer > millis()){
-    //     value += scale.read()/100.0;
-
-    //     counter++;
-    // }
-
-    // return value / counter;
-    
     return scale.get_units(SCALE_SAMPLE);
 }
 
-
 /* Refrenciapont mentése */
 void scaleZeroPoint(){
-    scaleReferencePoint = read_scale();
+    scale.tare();
+}
+
+/* Üres hordó offset mentése */
+void saveEmptyBarrelPoint(){
+    scale.tare();
+    scale_last_offset = scale.get_offset();
+    saveScaleOffset(scale_last_offset);
+}
+
+/* Mérleg alaphelyzetbe állítása */
+void resetScale(){
+    scale.set_offset(scale_last_offset);
 }
 
 
 /* Mérleg adatok kiprintelése */
 void print_scale_values(){
 
-    Serial.println("Before setting up the scale:");
-
-    //Serial.print("read average: \t\t");
-    //Serial.println(scale.read_average(SCALE_SAMPLE));  	// print the average of 20 readings from the ADC
+    Serial.printf("Scale calib: %d\n", scale_calib_factor);
+    Serial.printf("Scale offset: %d\n", scale_last_offset);
 
     Serial.print("get units: \t\t");
     Serial.println(read_scale(), 2);	// print the average of 5 readings from the ADC minus tare weight (not set) divided
-                            // by the SCALE parameter (not set yet)
-
-    //scale.set_scale(2280.f);                      // this value is obtained by calibrating the scale with known weights; see the README for details
-    //scale.tare();				        // reset the scale to 0
 
 }

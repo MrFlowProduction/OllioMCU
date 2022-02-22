@@ -8,6 +8,7 @@
 #include <general/pinout.h>
 #include <general/globals.h>
 #include <tools/diag.h>
+#include <tools/mem.h>
 
 extern HX711 scale;
 
@@ -22,6 +23,12 @@ float read_scale();
 
 /* Referencia pont beállítása */
 void scaleZeroPoint();
+
+/* Üres hordó offset mentése */
+void saveEmptyBarrelPoint();
+
+/* Mérleg visszaállítása */
+void resetScale();
 
 /* Mérleg adatok kiprintelése */
 void print_scale_values();

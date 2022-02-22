@@ -52,6 +52,9 @@ extern int                  tap_closed_angle;
 extern int                  tap_barrel_angle;
 extern int                  tap_watertank_angle;
 extern bool                 tap_init_en;
+extern float                scale_calib_factor;
+extern float                scale_zero_pointer;
+extern long                 scale_last_offset;
 
 //extern int                  machineState;
 // ========================================================================================================
