@@ -49,7 +49,15 @@ volatile byte       error_code =            0;              // Hibakód
 
 bool                blink;
 
+// WIFI
 // ========================================================================================================
 WifiState           wifiStat = WifiState::NOWIFI;
 bool                wifiIsConnected =       false;
 bool                wifiStateHandled =      true;
+
+// TAP
+// ========================================================================================================
+int                 tap_closed_angle =      0;              // Csap zárt állapotának szöge
+int                 tap_barrel_angle =      120;            // Csap hordó fele álló szöge
+int                 tap_watertank_angle =   230;            // Csap víztartály felé nyíló szöge
+bool                tap_init_en =           false;          // Csap initkor alaphelyzetbe állítás engedélyezve van-e

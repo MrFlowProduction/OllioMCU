@@ -5,9 +5,10 @@
 #include <general/settings.h>           // Settings
 #include <general/enum.h>
 #include <general/globals.h>
-#include <terminal.h>
+#include <tools/diag.h>
 #include <WiFi.h>
 #include <time.h>
+
 
 void INIT_RADIO();
 

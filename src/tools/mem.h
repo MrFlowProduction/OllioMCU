@@ -4,22 +4,35 @@
 #include <Arduino.h>
 #include <Preferences.h>
 #include <general/settings.h>
-
-#define MEM_APPID   "ollio"
-
-#define MEM_BLOCKID "blockid"
+#include <general/globals.h>
+#include <tools/diag.h>
 
 
 /* Következő blokk sorszámát adja vissza */
 uint32_t getNextBlockNumber();
 
+/* Memória írása (UINT32) */
+void setMem(const char*, uint32_t);
+
+/* Memória írása (INT) */
+void setMem(const char*, int);
+
+/* Memória írása (BOOL) */
+void setMem(const char*, bool);
+
 /* Blokk sorszámának beállítása */
 void setBlockNumber(uint32_t);
 
 /* Memória tisztítása */
-void mem_clear();
+void mem_clear(void);
+
+/* Beállítás inicializálása, ha még nem létezik létrehozza */
+void saveAngleToTap(TapState, int);
+
+/* Csap alaphelyzetbe állítás paraméterének változtatása */
+void changeTapInitEn(bool);
 
 /* Ellenőrzi a memórába meglévő adatokat, ha hiányoznak beírja az alapértéküket */
-void mem_init();
+void mem_init(void);
 
 #endif

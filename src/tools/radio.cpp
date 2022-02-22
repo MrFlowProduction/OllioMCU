@@ -141,6 +141,18 @@ void Wifi_PrintStations(){
 }
 
 
+void waitForWifi(int timebox){
+
+    unsigned long timeout = millis() + timebox;
+
+    while(timeout > millis()){
+        if(wifiIsConnected) break;
+    }
+
+    delay(100);
+}
+
+
 void INIT_RADIO(){
     printinit("WIFI", true);
     WiFi.mode(WIFI_STA);
@@ -149,6 +161,9 @@ void INIT_RADIO(){
     WiFi.onEvent(WiFiEvent);
     init_wifi();    
     configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
+
+    waitForWifi(5000);
+
     printdone();
 }
 

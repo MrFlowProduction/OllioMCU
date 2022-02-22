@@ -15,6 +15,7 @@
 
 void setup() {
     INIT_TERMINAL();
+    INIT_MACHINE();
     INIT_LCD();
     INIT_EXTERNAL_PORTS();
     INIT_LEDS();
@@ -22,7 +23,6 @@ void setup() {
     INIT_ADC();
     INIT_TAP();
     INIT_PRINTER();
-    INIT_MACHINE();
     INIT_RTC();
     INIT_RADIO();
 

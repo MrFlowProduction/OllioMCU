@@ -9,18 +9,31 @@ int getAngleByTapState(TapState state){
     switch (state)
     {
         case TapState::CLOSE:
-            return TAP_CLOSED;
+            return tap_closed_angle;
 
         case TapState::WATERTANK:
-            return TAP_WATERTANK;
+            return tap_watertank_angle;
 
         case TapState::BARREL:
-            return TAP_BARREL;
+            return tap_barrel_angle;
 
         default:
-            return TAP_BARREL;
+            return tap_closed_angle;
     }
 }
+
+
+/* Csap állapotának kiíratása */
+void printTapState(){
+    Serial.printf("Tap angle: %d\n", readTapAngle());
+    Serial.printf("Low state: %s angle: %d\n", getTapStateString(low), getAngleByTapState(low));
+    Serial.printf("Med state: %s angle: %d\n", getTapStateString(med), getAngleByTapState(med));
+    Serial.printf("High state: %s angle: %d\n", getTapStateString(high), getAngleByTapState(high));
+    Serial.printf("Tap state: %s \n", getTapStateString(tapState));
+}
+
+
+
 
 /* Középső állásszögű csap állapot */
 TapState getMedTapState(){
@@ -74,8 +87,17 @@ TapState getCurrentTapState(){
 }
 
 
+/* Csap értékeinek beállítása */
+void initTapValues(){
+    low = getMinTapState();
+    high = getMaxTapState();
+    med = getMedTapState();
+    tapState = getCurrentTapState();
+}
+
+
 /* Csap állapotának szöveges formája */
-char* getTaspStateString(TapState state){
+char* getTapStateString(TapState state){
     switch (state)
     {
         case TapState::CLOSE:
@@ -95,13 +117,17 @@ char* getTaspStateString(TapState state){
 
 
 /* Szög helyességének ellenőrzése */
-bool checkAngle(int destAngle, int currentAngle){
+bool checkAngle(int destAngle, int currentAngle, int startAngle){
 
-    if(destAngle <= (currentAngle + TAP_ANGLE_HIST) && 
-       destAngle >= (currentAngle - TAP_ANGLE_HIST))
-        return true;
-    else
-        return false;
+    // Ha az eltérés pozitív irányba van
+    if(startAngle < destAngle)
+        if(currentAngle >= (destAngle - TAP_ANGLE_HIST)) return true;
+    
+    if(startAngle > destAngle)
+        if(currentAngle <= (destAngle + TAP_ANGLE_HIST)) return true;
+
+    
+    return false;
 
 }
 
@@ -110,17 +136,18 @@ bool checkAngle(int destAngle, int currentAngle){
 /* Csap mozgatása */
 bool moveTap(int angle){
 
-    int currentAngle = readTapAngle();
+    int startAngle = readTapAngle();
+    int currentAngle = startAngle;
 
     // Ha épp ott áll ahol kell, akkor a csap beállítása helyes
-    if(checkAngle(angle, currentAngle)) 
+    if(checkAngle(angle, currentAngle, startAngle)) 
         return true;
 
     // Időkorlát beállítása
     unsigned long timeout = millis() + TAP_TIMEOUT;
 
     // Motor indítása a megfelelő irányba
-    if(currentAngle > angle)
+    if(angle > currentAngle)
         setDcMotor(MotorState::FORWARD);
     
     else
@@ -132,7 +159,7 @@ bool moveTap(int angle){
     while(timeout > millis()){
 
         // Beállított szög ellenőrzése
-        if(checkAngle(angle, readTapAngle()))
+        if(checkAngle(angle, readTapAngle(), startAngle))
         {
             isSucceded = true;
             break;
@@ -145,6 +172,21 @@ bool moveTap(int angle){
     return isSucceded;
 }
 
+
+/* A csap jelenlegi állásszögének mentése egy adott csapálláshoz */
+void saveTapAngleTo(TapState state){
+    Serial.printf("Save Tap angle to %s state\n", getTapStateString(state));
+    saveAngleToTap(state, readTapAngle());
+    Serial.println("Saved");
+    initTapValues();
+    printTapState();
+}
+
+
+bool moveTap(TapState state){
+    return moveTap(getAngleByTapState(state));
+}
+
 /* Csap beállítása */
 bool SetTap(TapState state){
 
@@ -155,7 +197,7 @@ bool SetTap(TapState state){
 
     // A csap állásához igazítja a motort az előre megadott
     // fok alapján
-    isSucceded = moveTap(getAngleByTapState(state));
+    isSucceded = moveTap(state);
 
     // Mentjük az állapotot ha sikerült a beállítás
     if(isSucceded)
@@ -170,16 +212,19 @@ void INIT_TAP(){
     printinit("TAP", true);
 
     // Csap állapotok rendezése
-    low = getMinTapState();
-    high = getMaxTapState();
-    med = getMedTapState();
-    tapState = getCurrentTapState();
+    initTapValues();
 
-    Serial.printf("Low state: %s\n", getTaspStateString(low));
-    Serial.printf("Med state: %s\n", getTaspStateString(med));
-    Serial.printf("High state: %s\n", getTaspStateString(high));
+    // Állapot kiíratása
+    printTapState();
 
-    Serial.printf("Tap state: %s\n", getTaspStateString(tapState));
+    if(!tap_init_en) { printdone(); return; }
+
+    // Csap alaphelyzetbe állítása
+    if(!SetTap(TapState::CLOSE)){
+        dropFaulty("Tap error", ERROR_TAP_DEFAULT_STATE);
+        printfail();
+        return;
+    }
 
     printdone();
 

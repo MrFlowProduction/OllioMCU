@@ -230,7 +230,7 @@ void MeasState()
     if (readProbeVoltage() < NO_LIQUID_VOLT)
     {
         /* Csap Zárása */
-        SetTap(TapState::BARREL);
+        SetTap(TapState::CLOSE);
         setProbeSupply(OFF);
         // TODO: Read Weight and save
 

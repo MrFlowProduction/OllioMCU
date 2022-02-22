@@ -13,7 +13,7 @@ void INIT_ADC(){
     
 
     if(!ads.isConnected()){
-        dropFaulty("ADC not available", 101);
+        dropFaulty("ADC not available", ERROR_ADC);
         return;
     }
 

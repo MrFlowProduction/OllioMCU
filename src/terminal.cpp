@@ -144,28 +144,50 @@ void terminal_handler()
 
     else if(temp == "barrel"){
       Serial.println("MOVING...");
-      SetTap(TapState::BARREL);
-      Serial.println("OK");
+      if(SetTap(TapState::BARREL)) printdone();
+      printfail();
     }
 
     else if(temp == "close"){
        Serial.println("MOVING...");
-      SetTap(TapState::CLOSE);
-      Serial.println("OK");
+      if(SetTap(TapState::CLOSE)) printdone();
+      printfail();
     }
 
     else if(temp == "watertank"){
        Serial.println("MOVING...");
-      SetTap(TapState::WATERTANK);
-      Serial.println("OK");
+      if(SetTap(TapState::WATERTANK)) printdone();
+      printfail();
+    }
+
+    else if(temp == "tap current state"){
+      Serial.printf("Tap angle: %d\n", readTapAngle());
+      Serial.println(getTapStateString(tapState));
+    }
+
+    else if(temp == "save angle to barrel"){
+      saveTapAngleTo(TapState::BARREL);
+    }
+
+    else if(temp == "save angle to close"){
+      saveTapAngleTo(TapState::CLOSE);
+    }
+
+    else if(temp == "save angle to watertank"){
+      saveTapAngleTo(TapState::WATERTANK);
+    }
+
+    else if(temp == "tap enable init"){
+      changeTapInitEn(true);
+    }
+
+    else if(temp == "tap disable init"){
+      changeTapInitEn(false);
     }
 
     else
     {
-
-      char buf[temp.length() + 1];
-      temp.toCharArray(buf, 0, temp.length() + 1);
-      Serial.printf("Unknown command: %s\n", buf);
+      Serial.printf("Unknown command: %s\n", temp);
     }
   }
 }

@@ -86,6 +86,7 @@ void INIT_LCD() {
     lcd.createChar(4, ry);
     lcd.createChar(5, rh);
 
+    setNoneScreen();
 
   printdone();
 }
@@ -336,10 +337,8 @@ void setNoneScreen() {
   lcd.setCursor(3,1);
   lcd.print("OllioFirmware");
 
-  delay(200);
-
-  lcd.setCursor(7,2);
-  lcd.print("v0.1");
+  lcd.setCursor(3,2);
+  lcd.print(VERSION);
 }
 
 

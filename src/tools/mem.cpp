@@ -2,6 +2,17 @@
 
 Preferences preferences;
 
+
+#define MEM_APPID           "ollio"
+#define MEM_VERSION         "version"
+#define MEM_BLOCKID         "blockid"
+#define MEM_TAP_CLOSE       "tap_close"
+#define MEM_TAP_BARREL      "tap_barrel"
+#define MEM_TAP_WATERTANK   "tap_watertank"
+#define MEM_TAP_INIT_EN     "tap_init_en"
+
+
+
 /* Következő blokk sorszámát adja vissza */
 uint32_t getNextBlockNumber(){
 
@@ -14,11 +25,62 @@ uint32_t getNextBlockNumber(){
     return blockid;
 }
 
+/* Memóriából kiolvas egy int-es értéket */
+int getMemInt(const char* key){
+    int value;
+
+    preferences.begin(MEM_APPID, true);
+    value = preferences.getInt(key);
+    preferences.end();
+
+    return value;
+}
+
+/* Memóriából kiolvas egy int-es értéket */
+uint32_t getMemUint(const char* key){
+    uint32_t value;
+
+    preferences.begin(MEM_APPID, true);
+    value = preferences.getUInt(key);
+    preferences.end();
+
+    return value;
+}
+
+
+/* Memóriából kiolvas egy int-es értéket */
+bool getMemBool(const char* key){
+    bool value;
+
+    preferences.begin(MEM_APPID, true);
+    value = preferences.getBool(key);
+    preferences.end();
+
+    return value;
+}
+
+
+void setMem(const char* key, uint32_t value){
+    preferences.begin(MEM_APPID, false);
+    preferences.putUInt(key, value);
+    preferences.end();
+}
+
+void setMem(const char* key, int value){
+    preferences.begin(MEM_APPID, false);
+    preferences.putInt(key, value);
+    preferences.end();
+}
+
+void setMem(const char* key, bool value){
+    preferences.begin(MEM_APPID, false);
+    preferences.putBool(key, value);
+    preferences.end();
+}
+
 /* Blokk sorszámának beállítása */
 void setBlockNumber(uint32_t value){
-    preferences.begin(MEM_APPID, false);
-    preferences.putUInt(MEM_BLOCKID, value);
-    preferences.end();
+    setMem(MEM_BLOCKID, value);
 }
 
 /* Memória tisztítása */
@@ -37,10 +99,99 @@ bool mem_check_key(const char* key){
     return result;
 }
 
+
+/* Beállítás inicializálása, ha még nem létezik létrehozza */
+int mem_init_setting(const char* key, int def_value){
+    if(!mem_check_key(key)){
+        setMem(key, def_value);
+        Serial.printf("Creater new setting where KEY: %s and VALUE %d\n", key, def_value);
+        return def_value;
+    }
+
+    return getMemInt(key);
+}
+
+
+/* Beállítás inicializálása, ha még nem létezik létrehozza */
+uint32_t mem_init_setting(const char* key, uint32_t def_value){
+    if(!mem_check_key(key)){
+        setMem(key, def_value);
+        Serial.printf("Creater new setting where KEY: %s and VALUE %d\n", key, def_value);
+        return def_value;
+    }
+
+    return getMemUint(key);
+}
+
+
+/* Beállítás inicializálása, ha még nem létezik létrehozza */
+bool mem_init_setting(const char* key, bool def_value){
+    if(!mem_check_key(key)){
+        setMem(key, def_value);
+        Serial.printf("Creater new setting where KEY: %s and VALUE %d\n", key, def_value);
+        return def_value;
+    }
+
+    return getMemBool(key);
+}
+
+
+
+
+/* Csap állásokhoz tartozó Kulcs a memóriában */
+const char* tapMemKey(TapState state){
+
+    switch (state)
+    {
+        case TapState::CLOSE:
+            return MEM_TAP_CLOSE;
+
+        case TapState::WATERTANK:
+            return MEM_TAP_WATERTANK;
+
+        case TapState::BARREL:
+            return MEM_TAP_BARREL;
+
+        default:
+            return "";
+    }
+}
+
+
+/* Beállítás inicializálása, ha még nem létezik létrehozza */
+void saveAngleToTap(TapState state, int angle){
+    Serial.printf("Angle: %d\n", angle);
+    setMem(tapMemKey(state), angle);
+    mem_init();
+}
+
+/* Csap init paraméterének módosítása */
+void changeTapInitEn(bool enable){
+    setMem(MEM_TAP_INIT_EN, enable);
+    printdone();
+}
+
+
 /* Ellenőrzi a memórába meglévő adatokat, ha hiányoznak beírja az alapértéküket */
 void mem_init(){
+
+
+
     if(!mem_check_key(MEM_BLOCKID)){
         setBlockNumber(BLOCK_NUMBER);
-        Serial.println("MEM - Set new block number is OK!");
+        Serial.println("Block ID set to default");
     }
+
+    // Tap close
+    tap_closed_angle = mem_init_setting(MEM_TAP_CLOSE, tap_closed_angle);
+
+    // Tap barrel
+    tap_barrel_angle = mem_init_setting(MEM_TAP_BARREL, tap_barrel_angle);
+
+    // Tap watertank
+    tap_watertank_angle = mem_init_setting(MEM_TAP_WATERTANK, tap_watertank_angle);
+
+    // Tap init enable
+    tap_init_en = mem_init_setting(MEM_TAP_INIT_EN, tap_init_en);
+
 }

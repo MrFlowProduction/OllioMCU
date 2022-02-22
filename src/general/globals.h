@@ -48,6 +48,10 @@ extern bool                 wifiIsConnected;
 extern bool                 wifiStateHandled;
 extern bool                 isRtcOk;
 extern bool                 stateTempVariable;
+extern int                  tap_closed_angle;
+extern int                  tap_barrel_angle;
+extern int                  tap_watertank_angle;
+extern bool                 tap_init_en;
 
 //extern int                  machineState;
 // ========================================================================================================

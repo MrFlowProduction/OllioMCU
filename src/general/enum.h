@@ -22,7 +22,8 @@ enum MotorState {
 enum TapState {
     WATERTANK,
     CLOSE,
-    BARREL
+    BARREL,
+    NOZONE
 };
 
 
@@ -53,17 +54,18 @@ enum WifiState {
 
 
 // Error codes
-#define ERROR_NONE 1000
-#define ERROR_DOOR_SENSOR_OPEN 1010
-#define ERROR_LCD 1020
-#define ERROR_PRINTER_INIT 1030
-#define ERROR_PRINTER_PAPER 1031
-#define ERROR_PRINTER_INK 1032
-#define ERROR_ADC 1040
-#define ERROR_SCALE 1050
-#define ERROR_TANK_SENSOR 1060
-#define ERROR_MOTOR 1070
-#define ERROR_RTC 1080
-#define ERROR_RTC_LOST_POWER 1081
+#define ERROR_NONE              1000
+#define ERROR_DOOR_SENSOR_OPEN  1010
+#define ERROR_LCD               1020
+#define ERROR_PRINTER_INIT      1030
+#define ERROR_PRINTER_PAPER     1031
+#define ERROR_PRINTER_INK       1032
+#define ERROR_ADC               1040
+#define ERROR_SCALE             1050
+#define ERROR_TANK_SENSOR       1060
+#define ERROR_MOTOR             1070
+#define ERROR_RTC               1080
+#define ERROR_RTC_LOST_POWER    1081
+#define ERROR_TAP_DEFAULT_STATE 1090
 
 #endif

@@ -183,31 +183,38 @@ void setDcMotorPins(bool in1, bool in2, bool enable){
 /* DC Motor beállítása */
 void setDcMotor(MotorState state){
     
+    Serial.print("DC Motor state: ");
+
     switch (state)
     {
         // Kikapcsolt állapot
         case MotorState::STOP:
             setDcMotorPins(false, false, false);
+            Serial.println("STOP");
             break;
 
         // Befékezett állapot
         case MotorState::BRAKE:
             setDcMotorPins(true, true, true);
+            Serial.println("BRAKE");
             break;
 
         // Előre tekerés
         case MotorState::FORWARD:
             setDcMotorPins(true, false, true);
+            Serial.println("FORWARD");
             break;
 
         // Hátra tekerés
         case MotorState::BACKWARD:
             setDcMotorPins(false, true, true);
+            Serial.println("BACKWARD");
             break;
         
         
         default:
             setDcMotorPins(false, false, false);
+            Serial.println("STOP");
             break;
     }
 
